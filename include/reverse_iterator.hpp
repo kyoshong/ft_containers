@@ -1,12 +1,12 @@
 // -*- C++ -*-
-//===----------------------------- stack ------------------------------------===//
+//===----------------------------- iterator ------------------------------------===//
 
-#ifndef STACK_HPP
-#define STACK_HPP
+#ifndef REVERSE_ITERATOR_HPP
+#define REVERSE_ITERATOR_HPP
 
-namespace ft
-{
+namespace ft {
 
+	
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
@@ -23,6 +23,9 @@ namespace ft
 ** --------------------------------- METHODS ----------------------------------
 */
 
+	
 } // namespace ft
+
+
 
 #endif
