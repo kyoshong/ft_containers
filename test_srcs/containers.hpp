@@ -12,7 +12,7 @@
     namespace ft = std;
 #else
     # define NAMESPACE "FT"
-    # include "../includes/ft.hpp"
+    # include "../include/ft.hpp"
 #endif
 
 void heading(std::string name);

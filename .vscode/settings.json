@@ -73,6 +73,7 @@
 		"stdexcept": "cpp",
 		"typeinfo": "cpp",
 		"__memory": "cpp",
-		"__functional_base_03": "cpp"
+		"__functional_base_03": "cpp",
+		"__undef_macros": "cpp"
 	}
 }

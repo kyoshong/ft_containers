@@ -48,10 +48,10 @@ void	ft_observers(const ft::vector<T>& vect)
 	std::cout << "2#  " << tmp1.max_size() << std::endl; // 2#
 	
 				/* CAPACITY */
-	// heading("capacity");
-	// std::cout << "0#  " << vect.capacity() << std::endl; // 0#
-	// std::cout << "1#  " << tmp.capacity() << std::endl; // 1#
-	// std::cout << "2#  " << tmp1.capacity() << std::endl; // 2#
+	heading("capacity");
+	std::cout << "0#  " << vect.capacity() << std::endl; // 0#
+	std::cout << "1#  " << tmp.capacity() << std::endl; // 1#
+	std::cout << "2#  " << tmp1.capacity() << std::endl; // 2#
 }
 
 #endif
