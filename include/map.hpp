@@ -29,6 +29,9 @@ namespace ft
 		typedef	reverse_iterator<iteraotr>									reverse_iterator;
 		typedef	reverse_iterator<const_iterator>							const_reverse_iterator;
 		typedef	typename	iterator_traits<iterator>::difference_type		difference_type;
+
+	private:
+	
 	public:
 		class  value_compare
 		{
@@ -45,17 +48,24 @@ namespace ft
 	/*
 	** ------------------------------- CONSTRUCTOR --------------------------------
 	*/
-		map() {};
+		map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+		: _tree(comp, alloc){}
+		template <typedef Iter>
+		map(Iter first, Iter last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+		: _tree(comp, alloc) { this->insert(first, last); }
+		map(const map& copy) { *this = copy; }
 	/*
 	** -------------------------------- DESTRUCTOR --------------------------------
 	*/
-		virtual ~map()
-		{
+		~map() {}
 
-		}
 	/*
 	** --------------------------------- OVERLOAD ---------------------------------
 	*/
+		map&		operator=()
+		{
+
+		}
 		
 	/*
 	** --------------------------------- METHODS ----------------------------------
