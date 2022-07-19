@@ -1,5 +1,5 @@
 #include "containers.hpp"
-// #include "map/mapTests.hpp"
+#include "map/mapTests.hpp"
 #include "vector/vectorTests.hpp"
 #include "stack/stackTests.hpp"
 
@@ -45,7 +45,7 @@ void heading(std::string name)
 int main()
 {
 	ft::vector<int>			vect;
-	// ft::map<int, int>		map;
+	ft::map<int, int>		map;
 	ft::stack<int>			     stack;
 	clock_t					start, end;
 	
@@ -54,7 +54,7 @@ int main()
      
 	start = clock();
 	vectorTests(vect);
-	// // mapTests(map);
+	mapTests(map);
 	stackTests(stack);
 	std::cout << "END." << std::endl;
 	end = clock();

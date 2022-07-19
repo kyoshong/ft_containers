@@ -4,13 +4,12 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
-<<<<<<< HEAD
 #include "tree.hpp"
 #include "reverse_iterator.hpp"
 
 namespace ft
 {
-	template<typename Key, typename T, typename Compare = std::less<Key>,
+	template<typename Key, typename T, typename Compare = ft::less<Key>,
     typename Allocator = std::allocator<std::pair<const Key, T> > >
 	class map {
 	public:
@@ -35,10 +34,10 @@ namespace ft
 		{
 			friend class map;
 		protected:
-			Compare comp;
-			value_compare(Compare c) : comp(c) {};
+			Compare _comp;
+			value_compare(Compare c) : _comp(c) {};
 		public:
-			bool	operator()(const value_type& x, const value_type& y) const { return (comp(x.firest, y.first)); }
+			bool	operator()(const value_type& x, const value_type& y) const { return (_comp(x.firest, y.first)); }
 		};
 	private:
 		tree _tree;
@@ -63,27 +62,6 @@ namespace ft
 	*/
 
 	};
-=======
-namespace ft
-{
-	
-/*
-** ------------------------------- CONSTRUCTOR --------------------------------
-*/
-
-/*
-** -------------------------------- DESTRUCTOR --------------------------------
-*/
-
-/*
-** --------------------------------- OVERLOAD ---------------------------------
-*/
-
-/*
-** --------------------------------- METHODS ----------------------------------
-*/
-
->>>>>>> 7d4204a0e29f0b0d280b16786e3367721c93157e
 } // namespace ft
 
 #endif

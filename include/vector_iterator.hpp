@@ -9,15 +9,6 @@
 namespace ft {
 
 /*
-** ------------------------------- CATEGORY TAGS --------------------------------
-*/
-	struct input_iterator_tag {};
-	struct output_iterator_tag {};
-	struct forward_iterator_tag       : public input_iterator_tag {};
-	struct bidirectional_iterator_tag : public forward_iterator_tag {};
-	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
-
-/*
 ** ------------------------------- VECTOR ITERATOR --------------------------------
 */
 	template <typename Category,              // iterator::iterator_category
@@ -57,7 +48,7 @@ namespace ft {
 	/*
 	** --------------------------------- OVERLOAD ---------------------------------
 	*/
-		vector_iterator&	operator=(T* copy)							{ this->base() = copy; return (*this); }
+		vector_iterator&	operator=(T* copy)							{ this->_ptr = copy; return (*this); }
 		vector_iterator&	operator=(const vector_iterator &copy)		{ this->_ptr = copy._ptr; return (*this); }
 		vector_iterator&	operator+=(difference_type dif)				{ this->_ptr += dif; return (*this); }
 		vector_iterator&	operator-=(difference_type dif)				{ this->_ptr -= dif; return (*this); }

@@ -17,11 +17,12 @@ namespace ft
 		typedef	T								value_type;
 		typedef	Cmp								value_compare;
 		typedef	Alc								allocator_type;
-		typedef	typename	T::first_type		key_type;
-		typedef	typename	T::second_type		mapped_type;
+		typedef	typename T::first_type			key_type;
+		typedef	typename T::second_type			mapped_type;
 		typedef	size_t							size_type;
-	private:
-		template <typename T>
+		typedef	value_type&						reference;
+		typedef	value_type*						pointer;
+
 		struct Node
 		{
 			value_type			value;
@@ -29,35 +30,72 @@ namespace ft
 			Node*				left;
 			Node*				right;
 		};
+
 	private:
-		Node*					root;
+		Node*					_root;
+		Node*					_end;
+		value_compare			_comp;
+		allocator_type			_alloc;
+		std::allocator<Node>	_alloc_node;
 
 	public:
 	/*
 	** ------------------------------- CONSTRUCTOR --------------------------------
 	*/
-		tree(T, ){}
+		tree(const value_compare& comp = value_compare(), const allocator_type& alloc = allocator_type())
+		: _comp(comp), _alloc(alloc)
+		{
+			this->_root = 0;
+			this->_end = this->_alloc_node.allocate(1);
+			this->create_node();
+		}
+
+
 	/*
 	** -------------------------------- DESTRUCTOR --------------------------------
 	*/
-		~tree();
+		~tree()
+		{
+			this->clear_tree();
+			this->_alloc_node.deallocate(this->_end, 1);
+		};
+
 	/*
 	** --------------------------------- OVERLOAD ---------------------------------
 	*/
-
+		tree&	operator=(const tree& copy)
+		{
+			if (this == &copy)
+				return (*this);
+			
+			
+		}
 	/*
 	** --------------------------------- METHODS ----------------------------------
 	*/
-		//--- Node Handler Methods ---//
-		Node*	insert_node()
+		//--- Tree Handler Methods ---//
+		void	clear_tree()
 		{
 
 		}
+		//--- Node Handler Methods ---//
+		Node*	insert_node(Node* node, const value_type& key, Node* parent = 0)
+		{
+			// if (node == NULL)
+			// {
+			// 	node == 
+			// }
+		}
+
 		Node*	delete_node()
 		{
 
 		}
-
+		Node*	create_node(Node* parent, const value_type& key)
+		{
+			Node* node = this->_alloc_node.allocate(1);
+			this->_alloc.con
+		}
 		//--- Rotation Methods ---//
 		Node*	set_balance(Node* node)
 		{
@@ -137,6 +175,43 @@ namespace ft
 		}
 
 	};
+	//--- non-member node methods ---//
+	template<typename N>
+	N	min_node(N node)
+	{
+		while (node->left)
+			node = node->left;
+		return (node);
+	}
+
+	template<typename N>
+	N	max_node(N node)
+	{
+		while (node->left)
+			node = node->left;
+		return (node);
+	}
+
+	template<typename N>
+	N	next_node(N node)
+	{
+		if (node->right)
+			return (min_node(node->right));
+		while (node->parent || !(node == node->parent->left))
+			node = node->parent;
+		return (node->parent);
+	}
+
+	template<typename N>
+	N	prev_node(N node)
+	{
+		if (node->left)
+			return (max_node(node->left));
+		while (node->parent || !(node == node->parent->right))
+			node = node->parent;
+		return (node->parent);
+	}
+
 
 } // namespace ft
 
