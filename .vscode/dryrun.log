@@ -22,11 +22,17 @@ make[1]: Entering directory `/Users/hyo/42Seoul/5_circle/ft_containers'
 rm -rf ft_obj/main.o ft_obj/ obj/main.o obj/
 echo "\033[33mContainers tester\033[0m: objects deleted\033[0m"
  
+sed -i '' 's/0/1/' "test_srcs/containers.hpp"
+echo "\033[33mstl_containers\033[0m: namespace changed\033[0m"
+mkdir obj/ 2> /dev/null || true
+c++ -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address -c test_srcs/main.cpp -o obj/main.o || true
+c++ -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address -o stl_containers obj/main.o && ([ $? -eq 0 ] && \
+	echo "Compilation of \033[33;1mstl_containers\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
+	|| echo "Compilation of \033[33;1mstl_containers\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
+printf "\n"
 make[1]: Leaving directory `/Users/hyo/42Seoul/5_circle/ft_containers'
- 
 sed -i '' 's/\/\/ vectorTests(vect)/vectorTests(vect)/' "test_srcs/main.cpp"	
 # @sed -i '' 's/\/\/ mapTests(map)/mapTests(map)/' "test_srcs/main.cpp"	
 sed -i '' 's/\/\/ stackTests(stack)/stackTests(stack)/' "test_srcs/main.cpp"	
- 
 make: Leaving directory `/Users/hyo/42Seoul/5_circle/ft_containers'
  

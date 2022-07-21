@@ -10,21 +10,21 @@ namespace ft {
 /*
 ** ------------------------------- TREE ITERATOR --------------------------------
 */
-	template <typename Category, typename Typ>
+	template <typename Category, typename Typ, typename TypNN = Typ>
 	class tree_iterator
 	{
 	public:
-		typedef Category					iterator_category;
-		typedef	Typ::value_type				value_type;
-		typedef	Typ::reference				reference;
-		typedef	Typ::const_reference		const_reference;
-		typedef	Typ::pointer				pointer;
-		typedef	Typ::const_pointer			const_pointer;
-		typedef	Typ::key_type				key_type;
-		typedef	Typ::mapped_type			mapped_type;
-		typedef	Typ::key_compare			key_compare;
-		typedef	Typ::Node					node;
-		typedef	ptrdiff_t					difference_type;
+		typedef Category							iterator_category;
+		typedef	typename Typ::value_type			value_type;
+		typedef	typename Typ::reference				reference;
+		typedef	typename Typ::const_reference		const_reference;
+		typedef	typename Typ::pointer				pointer;
+		typedef	typename Typ::const_pointer			const_pointer;
+		typedef	typename Typ::key_type				key_type;
+		typedef	typename Typ::mapped_type			mapped_type;
+		typedef	typename Typ::key_compare			key_compare;
+		typedef typename TypNN::Node				node;
+		typedef	ptrdiff_t							difference_type;
 	private:
 		node*			_ptr;
 		node*			_end;
@@ -35,7 +35,7 @@ namespace ft {
 	public:
 		tree_iterator(){}
 		tree_iterator(node* begin, node* end) { this->_ptr = begin; this->_end = end; }
-		tree_iterator(const map_iterator<Category, Typ>& copy) : _ptr(copy.base()), _end(copy.end()) {}
+		tree_iterator(const tree_iterator<Category, Typ>& copy) : _ptr(copy.base()), _end(copy.end()) {}
 
 /*
 ** -------------------------------- DESTRUCTOR --------------------------------
@@ -75,29 +75,22 @@ namespace ft {
 			return (*this);
 		}
 
-		tree_iterator& operator++(int)
+		tree_iterator operator++(int)
 		{
-			tree_iterator tem = this->_ptr;
-			this->_ptr++;
+			tree_iterator tem = *this;
+			++(*this);
 			return (tem);
 		}
 
-		tree_iterator& operator--(int)
+		tree_iterator operator--(int)
 		{
-			tree_iterator tem = this->_ptr;
-			this->_ptr--;
+			tree_iterator tem = *this;
+			--(*this);
 			return (tem);
 		}
 
-		template <typename T>
-		bool operator==(const tree_iterator<T, node_type>& copy) const {
-			return (this->_ptr == copy.base());
-		}
-
-		template <typename T>
-		bool operator!=(const tree_iterator<T, node_type>& copy) const {
-			return !(*this == copy);
-		}
+		friend bool operator==(const tree_iterator& it1, const tree_iterator& it2) { return it1._ptr == it2._ptr; }
+		friend bool operator!=(const tree_iterator& it1, const tree_iterator& it2) { return it1._ptr != it2._ptr; }
 
 	};
 	

@@ -14,13 +14,15 @@ namespace ft
 	class tree {
 	public:
 		typedef	T								value_type;
-		typedef	Cmp								value_compare;
+		typedef	Cmp								key_compare;
 		typedef	Alc								allocator_type;
 		typedef	typename T::first_type			key_type;
 		typedef	typename T::second_type			mapped_type;
 		typedef	size_t							size_type;
 		typedef	value_type&						reference;
+		typedef	const value_type&				const_reference;
 		typedef	value_type*						pointer;
+		typedef	const value_type*				const_pointer;
 
 		struct Node
 		{
@@ -32,7 +34,9 @@ namespace ft
 
 	private:
 		Node*					_root;
-		value_compare			_comp;
+		Node*					_end;
+		bool					_empty;
+		key_compare				_comp;
 		allocator_type			_alloc;
 		std::allocator<Node>	_alloc_node;
 
@@ -40,18 +44,22 @@ namespace ft
 	/*
 	** ------------------------------- CONSTRUCTOR --------------------------------
 	*/
-		tree(const value_compare& comp = value_compare(), const allocator_type& alloc = allocator_type())
+		tree(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 		: _comp(comp), _alloc(alloc)
 		{
-			this->_root = this->_alloc_node.allocate(1);
-			this->_root->parent = 0;
-			this->_root->left = 0;
-			this->_root->right = 0;
+			this->_root = 0;
+			this->_end = this->_alloc_node.allocate(1);
+			this->_empty = 1;
+			set_end();
 		}
-		tree(const Node& node, const value_compare& comp = value_compare(), const allocator_type& alloc = allocator_type())
+		tree(const Node& node, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 		: _comp(comp), _alloc(alloc)
 		{
 			this->_root = &node;
+			this->_end = this->_alloc_node.allocate(1);
+			if (!this->_root)
+				this->_empty = 1;
+			set_end();
 		}
 		tree(const tree& copy) { *this = copy; }
 
@@ -60,7 +68,8 @@ namespace ft
 	*/
 		~tree()
 		{
-			destroy_node(this->root);
+			clear();
+			this->_alloc_node.deallocate(this->_end, 1);
 		};
 
 	/*
@@ -70,13 +79,16 @@ namespace ft
 		{
 			if (this == &copy)
 				return (*this);
-			destroy_node(this->_root);
+			clear();
 			this->_root = 0;
+			this->_alloc_node.deallocate(this->_end, 1);
 			this->_alloc_node = copy._alloc_node;
 			this->_alloc = copy._alloc;
 			this->_comp = copy._comp;
-			this->_alloc = copy._alloc;
-			this->_root = copyNode(this->_root, x._root);
+			this->_empty = copy._empty;
+			this->_end = this->_alloc_node.allocate(1);
+			this->_root = copy_node(this->_root, copy._root);
+			set_end();
 			return (*this);
 		}
 
@@ -85,7 +97,7 @@ namespace ft
 			Node* node = find(k);
 			if (node)
 				return node->value.second;
-			this->_root = insert_node(this->_root, ft::make_pair<const key_type, mapped_type(k, mapped_type()));
+			this->_root = insert_node(this->_root, ft::make_pair<const key_type, mapped_type>(k, mapped_type()));
 			return find(k)->value.second;
 		}
 	/*
@@ -96,10 +108,13 @@ namespace ft
 
 		size_type		size() const		{ return get_size(this->_root); }
 		size_type		hight() const		{ return get_hight(this->_root); }
-		size_type		max_size() const	{ return this->_allocNode.max_size(); }
+		size_type		max_size() const	{ return this->_alloc.max_size(); }
+		Node*			end_node() const	{ return this->_end; }
+		Node*			get_root() const	{ return this->_root; }
+		key_compare		get_comp() const	{ return this->_comp; }
 		Node*			find(const key_type& k) const
 		{
-			Node* tmp = this->root;
+			Node* tmp = this->_root;
 			while(tmp)
 			{
 				if (this->_comp(k, tmp->value.first))
@@ -111,22 +126,59 @@ namespace ft
 			}
 			return NULL;
 		}
+		void			swap(tree& x)
+		{
+			Node* tmp = this->_root;
+			this->_root = x._root;
+			x._root = tmp;
+		}
+		void			clear()
+		{
+			destroy_node(this->_root);
+		}
 
+		void			set_end()
+		{
+			if (!this->_empty)
+				this->_end->parent = max_node(this->_root);
+			else
+			{
+				this->_root = this->_end;
+				this->_end->parent = 0;
+			}
+			this->_end->right = 0;
+			this->_end->left = 0;
+		}
 	//--------------------------- Node Handler Methods ---------------------------//
+		void	insert_node(const value_type& val)
+		{
+			this->_root = insert_node(this->_root, val);
+			set_end();
+		}
+
+		void	delete_node(const value_type& val)
+		{
+			this->_root = delete_node(this->_root, val);
+			set_end();
+		}
+
+		
 		Node*	insert_node(Node* node, const value_type& val, Node* parent = 0)
 		{
-			if (!node)
+			if (this->_empty || !node)
 			{
 				node = create_node(parent, val);
 			}
 			else if (this->_comp(val.first, node->value.first))
 			{
+				std::cout << "left : "<< std::endl;
 				node->left = insert_node(node->left, val);
 				node->left->parent = node;
 				node = set_balance(node);
 			}
 			else if (this->_comp(node->value.first, val.first))
 			{
+				std::cout << "right : "<< std::endl;
 				node->right = insert_node(node->right, val);
 				node->right->parent = node;
 				node = set_balance(node);
@@ -134,17 +186,17 @@ namespace ft
 			return node;
 		}
 
-		Node*	delete_node(Node* node, const value_type& val)
+		Node*	delete_node(Node* node, const key_type& k)
 		{
-			if (!node) return NULL;
-			if (this->_comp(val.first, node->value.first))
+			if (this->_empty || !node) return NULL;
+			if (this->_comp(k, node->value.first))
 			{
-				node->left = delete_node(node->left, val);
+				node->left = delete_node(node->left, k);
 				node = set_balance(node);
 			}
-			else if (this->_comp(node->value.first, val.first))
+			else if (this->_comp(node->value.first, k))
 			{
-				node->right = delete_node(node->right, val);
+				node->right = delete_node(node->right, k);
 				node = set_balance(node);
 			}
 			else
@@ -179,8 +231,11 @@ namespace ft
 					min->left = node->left;
 					node = min;
 				}
-				this->_alloc.destory(&del->value);
+				if (del == this->_root)
+					this->_empty = 1;
+				this->_alloc.destroy(&del->value);
 				this->_alloc_node.deallocate(del, 1);
+				set_end();
 			}
 			return node;
 		}
@@ -192,6 +247,7 @@ namespace ft
 			node->parent = parent;
 			node->right = 0;
 			node->left = 0;
+			this->_empty = 0;
 			return node;
 		}
 
@@ -211,23 +267,24 @@ namespace ft
 		Node*	set_balance(Node* node)
 		{
 			int bf = get_balancefactor(node);
+			std::cout << "bf : " << bf  << std::endl;
 			if (bf >= 2){
 				bf = get_balancefactor(node->left);
 				if (bf >= 1) {
 					node = ll_rotate(node);
 				}
 				else {
-					node = lr_Rotate(node);
+					node = lr_rotate(node);
 				}
 			}
 			else if (bf <= -2)
 			{
 				bf = get_balancefactor(node->right);
 				if (bf <= -1) {
-					node = rr_Rotate(node);
+					node = rr_rotate(node);
 				}
 				else {
-					node = rl_lRoate(node);
+					node = rl_rotate(node);
 				}
 			}
 			return node;
@@ -238,7 +295,7 @@ namespace ft
 			Node* child = node->right;
 			node->right = child->left;
 			if (child->left != NULL) {
-				childNode->left->parent = node;
+				child->left->parent = node;
 			}
 			child->left = node;
 			child->parent = node->parent;
@@ -246,7 +303,7 @@ namespace ft
 			return child;
 		}
 
-		Node*		rr_Rotate(Node* node)
+		Node*		rr_rotate(Node* node)
 		{
 			Node* child = node->left;
 			node->left = child->right;
@@ -259,27 +316,30 @@ namespace ft
 			return child;
 		}
 
-		Node*		lr_Rotate(Node* node)
+		Node*		lr_rotate(Node* node)
 		{
 			node->left = ll_rotate(node->left);
-			return (rr_Rotate(node));
+			return (rr_rotate(node));
 		}
 
-		Node*		rl_lRoate(Node* node->right)
+		Node*		rl_rotate(Node* node)
 		{
 			node->right = rr_rotate(node);
-			return (ll_Rotate(node));
+			return (ll_rotate(node));
 		}
 
 	//--------------------------- AVL Utils Methods ---------------------------//
 		int			get_balancefactor(Node *node)
 		{
-			return get_hight(node->left) - get_hight(node->right);
+			if (node)
+				return get_hight(node->left) - get_hight(node->right);
+			return 0;
 		}
 
 		size_type	get_size(Node* node) const
 		{
 			size_type num = 0;
+			if (_empty) return 0;
 			if (node)
 			{
 				num += get_size(node->right);
@@ -301,9 +361,9 @@ namespace ft
 		{
 			if (copy)
 			{
-				ori = copy_node(ori, src->left);
-				ori = copy_node(ori, src->right);
-				ori = insert_node(ori, src->value);
+				ori = copy_node(ori, copy->left);
+				ori = copy_node(ori, copy->right);
+				ori = insert_node(ori, copy->value);
 			}
 			return ori;
 		}
@@ -311,7 +371,7 @@ namespace ft
 	};
 	//--------------------------- non-member node methods ---------------------------//
 	template<typename N>
-	N	min_node(N node)
+	N*	min_node(N* node)
 	{
 		while (node->left)
 			node = node->left;
@@ -319,25 +379,34 @@ namespace ft
 	}
 
 	template<typename N>
-	N	max_node(N node)
+	N*	max_node(N* node)
 	{
-		while (node->left)
-			node = node->left;
+		while (node->right)
+			node = node->right;
 		return (node);
 	}
 
 	template<typename N>
-	N	next_node(N node)
+	N*	next_node(N* node)
 	{
+		std::cout << "start?" << std::endl;
+		if (!node)
+			return node;
 		if (node->right)
 			return (min_node(node->right));
-		while (node->parent || !(node == node->parent->left))
-			node = node->parent;
+		std::cout << "node : " << &node->value.first << std::endl;
+		std::cout << "parent : " << &node->parent << std::endl;
+		// while (node->parent || !(node == node->parent->left))
+		// {
+		// 	std::cout << "while" << std::endl;
+		// 	node = node->parent;
+		// }
+		std::cout << "wow?" << std::endl;
 		return (node->parent);
 	}
 
 	template<typename N>
-	N	prev_node(N node)
+	N*	prev_node(N* node)
 	{
 		if (node->left)
 			return (max_node(node->left));

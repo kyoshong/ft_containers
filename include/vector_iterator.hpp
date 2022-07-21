@@ -48,15 +48,15 @@ namespace ft {
 	/*
 	** --------------------------------- OVERLOAD ---------------------------------
 	*/
-		vector_iterator&	operator=(T* copy)							{ this->_ptr = copy; return (*this); }
-		vector_iterator&	operator=(const vector_iterator &copy)		{ this->_ptr = copy._ptr; return (*this); }
-		vector_iterator&	operator+=(difference_type dif)				{ this->_ptr += dif; return (*this); }
-		vector_iterator&	operator-=(difference_type dif)				{ this->_ptr -= dif; return (*this); }
+		vector_iterator&			operator=(T* copy)							{ this->_ptr = copy; return (*this); }
+		vector_iterator&			operator=(const vector_iterator &copy)		{ this->_ptr = copy._ptr; return (*this); }
+		vector_iterator&			operator+=(difference_type dif)				{ this->_ptr += dif; return (*this); }
+		vector_iterator&			operator-=(difference_type dif)				{ this->_ptr -= dif; return (*this); }
 
-		vector_iterator&	operator++()								{ this->_ptr++; return (*this); }
-		vector_iterator&	operator--()								{ this->_ptr--; return (*this); }
-		vector_iterator		operator++(int)								{ vector_iterator tem = *this; ++*this; return (tem); }
-		vector_iterator		operator--(int)								{ vector_iterator tem = *this; --*this; return (tem); }
+		vector_iterator&			operator++()								{ this->_ptr++; return (*this); }
+		vector_iterator&			operator--()								{ this->_ptr--; return (*this); }
+		vector_iterator				operator++(int)								{ vector_iterator tem = *this; ++*this; return (tem); }
+		vector_iterator				operator--(int)								{ vector_iterator tem = *this; --*this; return (tem); }
 
 		friend vector_iterator		operator+(const vector_iterator& itr, difference_type dif)	{ return vector_iterator(itr._ptr + dif); }
 		friend vector_iterator		operator+(difference_type dif, const vector_iterator& itr)	{ return vector_iterator(itr._ptr + dif); }
@@ -66,16 +66,16 @@ namespace ft {
 		friend difference_type		operator-(const vector_iterator& it1, const vector_iterator& it2)	{ return (it1._ptr - it2._ptr); }
 
 
-		reference			operator*() const								{ return (*this->_ptr); }
-		T*					operator->() const								{ return (operator*()); }
-		reference			operator[](const difference_type &idx) const	{ return (this->_ptr[idx]);}
+		reference					operator*() const								{ return (*this->_ptr); }
+		T*							operator->() const								{ return (operator*()); }
+		reference					operator[](const difference_type &idx) const	{ return (this->_ptr[idx]);}
 		
-		friend bool				operator==(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr == y._ptr); }
-		friend bool				operator!=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr != y._ptr); }
-		friend bool				operator<(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr < y._ptr); }
-		friend bool				operator>(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr > y._ptr); }
-		friend bool				operator<=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr <= y._ptr); }
-		friend bool				operator>=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr >= y._ptr); }
+		friend bool					operator==(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr == y._ptr); }
+		friend bool					operator!=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr != y._ptr); }
+		friend bool					operator<(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr < y._ptr); }
+		friend bool					operator>(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr > y._ptr); }
+		friend bool					operator<=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr <= y._ptr); }
+		friend bool					operator>=(const vector_iterator& x, const vector_iterator& y)	{ return (x._ptr >= y._ptr); }
 
 	};
 } // namespace ft
