@@ -65,13 +65,59 @@ namespace ft {
 
 		tree_iterator& operator++()
 		{
-			this->_ptr = next_node(this->_ptr);
+				if (this->_ptr->right)
+				{
+					this->_ptr = min_node(this->_ptr->right);
+					return (*this);
+				}
+				else if (this->_ptr->parent)
+				{
+					// find first previous greater node
+					key_type key = this->_ptr->value.first;
+					node *tmp = this->_ptr->parent;
+					while (tmp && this->_comp(tmp->value.first, key))
+						tmp = tmp->parent;
+					if (tmp)
+					{
+						this->_ptr = tmp;
+						return *this;
+					}
+				}
+				this->_ptr = this->_end;
+				// return (*this);
+			// this->_ptr = next_node(this->_ptr);
+			// if (this->_ptr == NULL)
+			// 	this->_ptr = this->_end;
 			return (*this);
 		}
 
 		tree_iterator& operator--()
 		{
-			this->_ptr = prev_node(this->_ptr);
+			// this->_ptr = prev_node(this->_ptr);
+			 if (this->_ptr == this->_end)
+				{
+					this->_ptr = this->_ptr->parent;
+					return (*this);
+				}
+				else if (this->_ptr->left)
+				{
+					this->_ptr = min_node(this->_ptr->left);
+					return (*this);
+				}
+				else if (this->_ptr->parent)
+				{
+					// find first previous smaller node
+					key_type key = this->_ptr->value.first;
+					node *tmp = this->_ptr->parent;
+					while (tmp && this->_comp(key, tmp->value.first))
+						tmp = tmp->parent;
+					if (tmp)
+					{
+						this->_ptr = tmp;
+						return (*this);
+					}
+				}
+				return (*this);
 			return (*this);
 		}
 

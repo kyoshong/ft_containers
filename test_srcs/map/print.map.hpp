@@ -9,7 +9,6 @@ void	print(const ft::map<key, value>& map, int n)
 	std::cout << n << "#  size: " << map.size() << std::endl << "    ";
 	for (typename ft::map<key, value>::const_iterator it = map.begin() ; it != map.end(); ++it)
 	{
-		std::cout << "yoyoo 언제옴" << std::endl;
 		std::cout << "(" << it->first << ", " << it->second << ") ";
 	}
 

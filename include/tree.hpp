@@ -69,7 +69,7 @@ namespace ft
 		~tree()
 		{
 			clear();
-			this->_alloc_node.deallocate(this->_end, 1);
+			// this->_alloc_node.deallocate(this->_end, 1);
 		};
 
 	/*
@@ -77,15 +77,16 @@ namespace ft
 	*/
 		tree&			operator=(const tree& copy)
 		{
+			// std::cout << "wpw::: " <<std::endl;
 			if (this == &copy)
 				return (*this);
-			clear();
+			destroy_node(this->_root);
 			this->_root = 0;
 			this->_alloc_node.deallocate(this->_end, 1);
 			this->_alloc_node = copy._alloc_node;
 			this->_alloc = copy._alloc;
 			this->_comp = copy._comp;
-			this->_empty = copy._empty;
+			this->_empty = 1;
 			this->_end = this->_alloc_node.allocate(1);
 			this->_root = copy_node(this->_root, copy._root);
 			set_end();
@@ -135,6 +136,9 @@ namespace ft
 		void			clear()
 		{
 			destroy_node(this->_root);
+			this->_root = 0;
+			this->_empty = 1;
+			this->set_end();
 		}
 
 		void			set_end()
@@ -161,7 +165,6 @@ namespace ft
 			this->_root = delete_node(this->_root, val);
 			set_end();
 		}
-
 		
 		Node*	insert_node(Node* node, const value_type& val, Node* parent = 0)
 		{
@@ -171,14 +174,12 @@ namespace ft
 			}
 			else if (this->_comp(val.first, node->value.first))
 			{
-				std::cout << "left : "<< std::endl;
 				node->left = insert_node(node->left, val);
 				node->left->parent = node;
 				node = set_balance(node);
 			}
 			else if (this->_comp(node->value.first, val.first))
 			{
-				std::cout << "right : "<< std::endl;
 				node->right = insert_node(node->right, val);
 				node->right->parent = node;
 				node = set_balance(node);
@@ -201,7 +202,6 @@ namespace ft
 			}
 			else
 			{
-				Node* del = node;
 				if (node->left && !node->right)
 				{
 					node->left->parent = node->parent;
@@ -215,6 +215,7 @@ namespace ft
 				else if (node->left && node->right)
 				{
 					//삭제 노드 subtree 중 가장 작은 노드 찾기
+					Node* del = node;
 					Node* min = min_node(node->right);
 					if (min != node->right)
 					{
@@ -230,12 +231,12 @@ namespace ft
 					node->left->parent = min;
 					min->left = node->left;
 					node = min;
+					if (del == this->_root)
+						this->_empty = 1;
+					this->_alloc.destroy(&del->value);
+					this->_alloc_node.deallocate(del, 1);
+					set_end();
 				}
-				if (del == this->_root)
-					this->_empty = 1;
-				this->_alloc.destroy(&del->value);
-				this->_alloc_node.deallocate(del, 1);
-				set_end();
 			}
 			return node;
 		}
@@ -258,7 +259,7 @@ namespace ft
 				destroy_node(node->left);
 				destroy_node(node->right);
 				this->_alloc.destroy(&node->value);
-				this->_alloc_node.deallocate(node, 1);
+				// this->_alloc_node.deallocate(node, 1);
 			}
 		}
 
@@ -267,7 +268,6 @@ namespace ft
 		Node*	set_balance(Node* node)
 		{
 			int bf = get_balancefactor(node);
-			std::cout << "bf : " << bf  << std::endl;
 			if (bf >= 2){
 				bf = get_balancefactor(node->left);
 				if (bf >= 1) {
@@ -290,8 +290,9 @@ namespace ft
 			return node;
 		}
 
-		Node*	ll_rotate(Node* node)
+		Node*	rr_rotate(Node* node)
 		{
+			// std::cout << "rr_rotate" << std::endl;
 			Node* child = node->right;
 			node->right = child->left;
 			if (child->left != NULL) {
@@ -303,8 +304,9 @@ namespace ft
 			return child;
 		}
 
-		Node*		rr_rotate(Node* node)
+		Node*		ll_rotate(Node* node)
 		{
+			// std::cout << "ll_rotate" << std::endl;
 			Node* child = node->left;
 			node->left = child->right;
 			if (child->right != NULL) {
@@ -318,14 +320,16 @@ namespace ft
 
 		Node*		lr_rotate(Node* node)
 		{
-			node->left = ll_rotate(node->left);
-			return (rr_rotate(node));
+			// std::cout << "lr_rotate" << std::endl;
+			node->left = rr_rotate(node->left);
+			return (ll_rotate(node));
 		}
 
 		Node*		rl_rotate(Node* node)
 		{
-			node->right = rr_rotate(node);
-			return (ll_rotate(node));
+			// std::cout << "rl_rotate" << std::endl;
+			node->right = ll_rotate(node->right);
+			return (rr_rotate(node));
 		}
 
 	//--------------------------- AVL Utils Methods ---------------------------//
@@ -389,19 +393,37 @@ namespace ft
 	template<typename N>
 	N*	next_node(N* node)
 	{
-		std::cout << "start?" << std::endl;
 		if (!node)
 			return node;
-		if (node->right)
-			return (min_node(node->right));
-		std::cout << "node : " << &node->value.first << std::endl;
-		std::cout << "parent : " << &node->parent << std::endl;
-		// while (node->parent || !(node == node->parent->left))
+		// if (node->right)
+		// 	return (min_node(node->right));
+		// if (node->parent)
 		// {
-		// 	std::cout << "while" << std::endl;
-		// 	node = node->parent;
+		// 	N* tmp = node->parent;
+		// 	while (tmp && node->get_comp()(tmp->value, node->value.first))
+		// 	{
+		// 		tmp = tmp->parent;
+		// 	}
+		// 	if (tmp)
+		// 	{
+		// 		return tmp;
+		// 	}
 		// }
-		std::cout << "wow?" << std::endl;
+
+		// 	return NULL;
+			// key_type key = this->_ptr->value.first;
+			// 		node *tmp = this->_ptr->parent;
+			// 		while (tmp && this->_key_comp(tmp->value.first, key))
+			// 			tmp = tmp->parent;
+			// 		if (tmp)
+			// 		{
+			// 			this->_ptr = tmp;
+			// 			return *this;
+			// 		}
+			// 	}
+				// this->_ptr = this->_end;
+				// return ();
+		// std::cout << "next_node" << std::endl;
 		return (node->parent);
 	}
 
@@ -410,7 +432,7 @@ namespace ft
 	{
 		if (node->left)
 			return (max_node(node->left));
-		while (node->parent || !(node == node->parent->right))
+		while (node->parent && !(node == node->parent->right))
 			node = node->parent;
 		return (node->parent);
 	}

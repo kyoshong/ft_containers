@@ -17,9 +17,8 @@ void    mapTests(ft::map<Key, Value>& map)
 	for (int i = 0; i < 6; ++i) {
 		typename ft::map<Key, Value>::value_type val(i, i);
 		map.insert(val);
-		std::cout << "map[i]->first : " << map.begin()->first << std::endl;
-		std::cout << "map[i]->end() : " << map.end()->first << std::endl;
 	}
+	std::cout << "map[i]->first : " << map.begin()->first << std::endl;
 
 	ft_iterators(map);
 	ft_modifiers(map);
