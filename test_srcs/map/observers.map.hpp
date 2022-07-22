@@ -20,9 +20,9 @@ void	ft_observers(const ft::map<Key, Value>& map)
 				/* MAX_SIZE */
 	/* the results will be different because a node in ft::map is
 	different from a node in std::map, so have different sizes */
-	// heading("max_size");
-	// std::cout << "0#  " << map.max_size() << std::endl; // 0#
-	// std::cout << "1#  " << tmp.max_size() << std::endl; // 1#
+	heading("max_size");
+	std::cout << "0#  " << map.max_size() << std::endl; // 0#
+	std::cout << "1#  " << tmp.max_size() << std::endl; // 1#
 }
 
 #endif

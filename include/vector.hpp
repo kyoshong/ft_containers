@@ -125,16 +125,14 @@ namespace ft
 		if (n > max_size()) {
 			throw (std::length_error("ft::vector reserve() max_size length Eroor"));
 		}
-		
-			if (n > this->_capacity) {
+		if (n > this->_capacity) {
 			pointer tem = this->_ptr;
-			this->_ptr =  this->_alloc.allocate(n);
+			this->_ptr = this->_alloc.allocate(n);
 			for (size_type i = 0; i < this->_size; i++)
 			{
 				this->_alloc.construct(&this->_ptr[i], tem[i]);
 				this->_alloc.destroy(&tem[i]);
 			}
-			// this->_alloc.deallocate(tem, this->_capacity);
 			this->_capacity = n;
 		}
 	}

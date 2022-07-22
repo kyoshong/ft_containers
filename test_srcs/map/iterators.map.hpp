@@ -10,7 +10,6 @@ void	ft_iterators(ft::map<Key, Value>& map)
 					/* ITERATOR */
 	heading("iterator");
 	print(tmp, 0); // 0#
-	std::cout << "map.begin : " << map.begin()->first << std::endl;
 
 	for (typename ft::map<Key, Value>::iterator it = map.begin() ; it != map.end(); ++it)
 	{
@@ -38,7 +37,6 @@ void	ft_iterators(ft::map<Key, Value>& map)
 	std::cout << "3#  " << rit->first << std::endl; // 3#
 	--rit;
 	std::cout << "4#  " << rit->first << std::endl; // 4#
-
 }
 
 

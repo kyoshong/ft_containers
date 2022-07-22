@@ -134,7 +134,7 @@ namespace ft
 		size_type				erase(const key_type& k)
 		{
 			size_type count = this->size();
-			this->_tree.delete_node(this->_tree.get_root(), k);
+			this->_tree.delete_node(k);
 			return (count != this->size());
 		}
 
@@ -148,9 +148,9 @@ namespace ft
 			iterator temp;
 			while (first != last)
 			{
-				temp = first;
+				temp = first++;
 				this->erase(temp);
-				++first;
+				// ++first;
 			}
 		}
 		void					swap(map& x)		{ this->_tree.swap(x._tree); }

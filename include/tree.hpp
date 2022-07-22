@@ -59,6 +59,8 @@ namespace ft
 			this->_end = this->_alloc_node.allocate(1);
 			if (!this->_root)
 				this->_empty = 1;
+			else
+				this->_empty = 0;
 			set_end();
 		}
 		tree(const tree& copy) { *this = copy; }
@@ -69,7 +71,7 @@ namespace ft
 		~tree()
 		{
 			clear();
-			// this->_alloc_node.deallocate(this->_end, 1);
+			this->_alloc_node.deallocate(this->_end, 1);
 		};
 
 	/*
@@ -77,7 +79,6 @@ namespace ft
 	*/
 		tree&			operator=(const tree& copy)
 		{
-			// std::cout << "wpw::: " <<std::endl;
 			if (this == &copy)
 				return (*this);
 			destroy_node(this->_root);
@@ -86,7 +87,7 @@ namespace ft
 			this->_alloc_node = copy._alloc_node;
 			this->_alloc = copy._alloc;
 			this->_comp = copy._comp;
-			this->_empty = 1;
+			this->_empty = copy._empty;
 			this->_end = this->_alloc_node.allocate(1);
 			this->_root = copy_node(this->_root, copy._root);
 			set_end();
@@ -135,7 +136,8 @@ namespace ft
 		}
 		void			clear()
 		{
-			destroy_node(this->_root);
+			if (this->_root)
+				destroy_node(this->_root);
 			this->_root = 0;
 			this->_empty = 1;
 			this->set_end();
@@ -144,7 +146,9 @@ namespace ft
 		void			set_end()
 		{
 			if (!this->_empty)
+			{
 				this->_end->parent = max_node(this->_root);
+			}
 			else
 			{
 				this->_root = this->_end;
@@ -160,9 +164,9 @@ namespace ft
 			set_end();
 		}
 
-		void	delete_node(const value_type& val)
+		void	delete_node(const key_type& k)
 		{
-			this->_root = delete_node(this->_root, val);
+			this->_root = delete_node(this->_root, k);
 			set_end();
 		}
 		
@@ -189,7 +193,7 @@ namespace ft
 
 		Node*	delete_node(Node* node, const key_type& k)
 		{
-			if (this->_empty || !node) return NULL;
+			if (!this->size() || !node) return 0;
 			if (this->_comp(k, node->value.first))
 			{
 				node->left = delete_node(node->left, k);
@@ -202,42 +206,89 @@ namespace ft
 			}
 			else
 			{
-				if (node->left && !node->right)
+				if (this->size() == 1)
 				{
-					node->left->parent = node->parent;
-					node = node->left;
+					this->_empty = 1;
 				}
-				else if (!node->left && node->right)
+				if (!node->left || !node->right)
 				{
-					node->right->parent = node->parent;
-					node = node->right;
+					Node* tmp = node;
+					node = node->left ? node->left : node->right;
+					if (node)
+						node->parent = tmp->parent;
+					this->_alloc.destroy(&tmp->value);
+					this->_alloc_node.deallocate(tmp, 1);
 				}
-				else if (node->left && node->right)
+				else
 				{
-					//삭제 노드 subtree 중 가장 작은 노드 찾기
-					Node* del = node;
-					Node* min = min_node(node->right);
-					if (min != node->right)
+					// find the greatest smaller
+					Node *tmp = min_node(node->right);
+
+					// switch them
+					if (tmp != node->right)
 					{
-						if (min->right)
-						{
-							min->parent->left = min->right;
-							min->right->parent = min->parent;
-						}
-						node->right->parent = min;
-						min->right = node->right;
+						tmp->right = node->right;
+						node->right->parent = tmp;
 					}
-					min->parent = node->parent;
-					node->left->parent = min;
-					min->left = node->left;
-					node = min;
-					if (del == this->_root)
-						this->_empty = 1;
-					this->_alloc.destroy(&del->value);
-					this->_alloc_node.deallocate(del, 1);
-					set_end();
+					// hyoskkim
+					if (tmp != node->left)
+					{
+						tmp->left = node->left;
+						node->left->parent = tmp;
+					}
+					tmp->parent->left = 0;
+					tmp->parent = node->parent;
+					// destroy it
+					this->_alloc.destroy(&node->value);
+					this->_alloc_node.deallocate(node, 1);
+					node = tmp;
 				}
-			}
+				// if (this->_empty)
+				// {
+				// 	_root = 0;
+				// 	set_end();
+				// }
+				// if (!node->left && !node->right)
+				// {
+				// 	node = 0;
+				// }
+				// if (node->left && !node->right)
+				// {
+				// 	node->left->parent = node->parent;
+				// 	node = node->left;
+				// }
+				// else if (!node->left && node->right)
+				// {
+				// 	node->right->parent = node->parent;
+				// 	node = node->right;
+				// }
+				// else
+				// {
+				// 	//삭제 노드 subtree 중 가장 작은 노드 찾기
+				// 	Node* del = node;
+				// 	Node* min = min_node(node->right);
+				// 	if (min != node->right)
+				// 	{
+				// 		if (min->right)
+				// 		{
+				// 			min->parent->left = min->right;
+				// 			min->right->parent = min->parent;
+				// 		}
+				// 		node->right->parent = min;
+				// 		min->right = node->right;
+				// 	}
+				// 	min->parent = node->parent;
+				// 	node->left->parent = min;
+				// 	min->left = node->left;
+				// 	node = min;
+				// 	this->_alloc.destroy(&del->value);
+				// 	this->_alloc_node.deallocate(del, 1);
+				// }
+			
+			}	
+					// if (this->size() == 0)
+					// 	this->_empty = 1;
+					// set_end();
 			return node;
 		}
 		
@@ -254,12 +305,12 @@ namespace ft
 
 		void	destroy_node(Node* node)
 		{
-			if (node)
+			if (node && node != this->_end)
 			{
 				destroy_node(node->left);
 				destroy_node(node->right);
 				this->_alloc.destroy(&node->value);
-				// this->_alloc_node.deallocate(node, 1);
+				this->_alloc_node.deallocate(node, 1);
 			}
 		}
 
@@ -292,7 +343,6 @@ namespace ft
 
 		Node*	rr_rotate(Node* node)
 		{
-			// std::cout << "rr_rotate" << std::endl;
 			Node* child = node->right;
 			node->right = child->left;
 			if (child->left != NULL) {
@@ -306,7 +356,6 @@ namespace ft
 
 		Node*		ll_rotate(Node* node)
 		{
-			// std::cout << "ll_rotate" << std::endl;
 			Node* child = node->left;
 			node->left = child->right;
 			if (child->right != NULL) {
@@ -320,14 +369,12 @@ namespace ft
 
 		Node*		lr_rotate(Node* node)
 		{
-			// std::cout << "lr_rotate" << std::endl;
 			node->left = rr_rotate(node->left);
 			return (ll_rotate(node));
 		}
 
 		Node*		rl_rotate(Node* node)
 		{
-			// std::cout << "rl_rotate" << std::endl;
 			node->right = ll_rotate(node->right);
 			return (rr_rotate(node));
 		}
@@ -423,7 +470,6 @@ namespace ft
 			// 	}
 				// this->_ptr = this->_end;
 				// return ();
-		// std::cout << "next_node" << std::endl;
 		return (node->parent);
 	}
 
