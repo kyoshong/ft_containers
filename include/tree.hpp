@@ -221,16 +221,12 @@ namespace ft
 				}
 				else
 				{
-					// find the greatest smaller
 					Node *tmp = min_node(node->right);
-
-					// switch them
 					if (tmp != node->right)
 					{
 						tmp->right = node->right;
 						node->right->parent = tmp;
 					}
-					// hyoskkim
 					if (tmp != node->left)
 					{
 						tmp->left = node->left;
@@ -238,57 +234,11 @@ namespace ft
 					}
 					tmp->parent->left = 0;
 					tmp->parent = node->parent;
-					// destroy it
 					this->_alloc.destroy(&node->value);
 					this->_alloc_node.deallocate(node, 1);
 					node = tmp;
 				}
-				// if (this->_empty)
-				// {
-				// 	_root = 0;
-				// 	set_end();
-				// }
-				// if (!node->left && !node->right)
-				// {
-				// 	node = 0;
-				// }
-				// if (node->left && !node->right)
-				// {
-				// 	node->left->parent = node->parent;
-				// 	node = node->left;
-				// }
-				// else if (!node->left && node->right)
-				// {
-				// 	node->right->parent = node->parent;
-				// 	node = node->right;
-				// }
-				// else
-				// {
-				// 	//삭제 노드 subtree 중 가장 작은 노드 찾기
-				// 	Node* del = node;
-				// 	Node* min = min_node(node->right);
-				// 	if (min != node->right)
-				// 	{
-				// 		if (min->right)
-				// 		{
-				// 			min->parent->left = min->right;
-				// 			min->right->parent = min->parent;
-				// 		}
-				// 		node->right->parent = min;
-				// 		min->right = node->right;
-				// 	}
-				// 	min->parent = node->parent;
-				// 	node->left->parent = min;
-				// 	min->left = node->left;
-				// 	node = min;
-				// 	this->_alloc.destroy(&del->value);
-				// 	this->_alloc_node.deallocate(del, 1);
-				// }
-			
 			}	
-					// if (this->size() == 0)
-					// 	this->_empty = 1;
-					// set_end();
 			return node;
 		}
 		
@@ -442,34 +392,6 @@ namespace ft
 	{
 		if (!node)
 			return node;
-		// if (node->right)
-		// 	return (min_node(node->right));
-		// if (node->parent)
-		// {
-		// 	N* tmp = node->parent;
-		// 	while (tmp && node->get_comp()(tmp->value, node->value.first))
-		// 	{
-		// 		tmp = tmp->parent;
-		// 	}
-		// 	if (tmp)
-		// 	{
-		// 		return tmp;
-		// 	}
-		// }
-
-		// 	return NULL;
-			// key_type key = this->_ptr->value.first;
-			// 		node *tmp = this->_ptr->parent;
-			// 		while (tmp && this->_key_comp(tmp->value.first, key))
-			// 			tmp = tmp->parent;
-			// 		if (tmp)
-			// 		{
-			// 			this->_ptr = tmp;
-			// 			return *this;
-			// 		}
-			// 	}
-				// this->_ptr = this->_end;
-				// return ();
 		return (node->parent);
 	}
 
